@@ -1,13 +1,17 @@
 const express = require('express')
-const connectToMongo = require('./db')
+const mongoose = require('mongoose')
 const cors = require("cors");
-const PORT = 8000;
+require("dotenv").config();
 const MovieDetails = require("./models/movieDetails");
 
-connectToMongo()
 let app = express();
 app.use(express.json())
 app.use(cors())
+
+const connect = () => {
+    return mongoose.connect(process.env.MONGOOSE_DB_URL);
+};
+
 
 app.get("/movies", async (req, res) => {
     try {
@@ -61,6 +65,7 @@ app.post("/movies", async (req, res) => {
     }
 })
 
-app.listen(PORT, () => {
-    console.log(`Listening at port: ${PORT}`);
-})
+app.listen(process.env.PORT, async (req, res) => {
+    await connect();
+    console.log(`Listening on port ${process.env.PORT}`);
+});
